@@ -62,8 +62,12 @@ def update_student(request):
 @csrf_exempt
 def add_student_mark(request):
     data = json.loads(request.body)
-    if Marks.objects.filter(subject=data.get("subject"),student__name=data.get("name")).exists():
-        return JsonResponse({"status":"failed","msg":"record exist"})
+    student_q = Marks.objects.filter(subject=data.get("subject"),student__name=data.get("name"))
+    if student_q.exists():
+        student = student_q.first()
+        student.marks_obtained = data.get("mark")
+        student.save()
+        return JsonResponse({"status":"success"})
     try:
         stuendt_objec = Student.objects.get(name=data.get("name"))
     except Exception:
