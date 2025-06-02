@@ -9,6 +9,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.utils import timezone
+from django.db.models import  F
 
 def login_view(request):
     if request.method == "POST":
@@ -64,14 +65,16 @@ def add_student_mark(request):
     data = json.loads(request.body)
     student_q = Marks.objects.filter(subject=data.get("subject"),student__name=data.get("name"))
     if student_q.exists():
-        student = student_q.first()
-        student.marks_obtained = data.get("mark")
-        student.save()
-        return JsonResponse({"status":"success"})
+        
+        print(data.get("mark"),"pr")
+        print(student_q)
+        student_q.update(marks_obtained=F('marks_obtained') + data.get("mark"))
+        
+        return JsonResponse({"status":"success","operation":"update"})
     try:
         stuendt_objec = Student.objects.get(name=data.get("name"))
     except Exception:
         return JsonResponse({"status":"failed"})
     Marks.objects.create(subject=data.get("subject"),marks_obtained=data.get("mark"),student=stuendt_objec,classroom=stuendt_objec.current_classroom,date=timezone.now())
     
-    return JsonResponse({"status":"success"})
+    return JsonResponse({"status":"success","operation":"create"})

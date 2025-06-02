@@ -255,7 +255,7 @@ tableData = transformedData
                 mark: document.getElementById('mark').value
             };
 
-fetch('/add-student', {
+      fetch('/add-student', {
 
     
   method: 'POST',
@@ -264,14 +264,40 @@ fetch('/add-student', {
   
   },
   body: JSON.stringify(newRecord),
-  credentials: 'include'  // very important: ensures session cookie is sent
+  credentials: 'include'  
+}).then(response => {
+  
+  return response.json();
 })
-            
-            tableData.push(newRecord);
+.then(data => {
+  if(data.operation=="update"){
+console.log("adding data");
+const index = tableData.findIndex(
+  obj => obj.name === newRecord.name && obj.subject === newRecord.subject
+  
+);
+tableData[index] = {
+    name:newRecord.name,
+    subject:newRecord.subject,
+    mark:parseInt(newRecord.mark) + parseInt(tableData[index].mark)
+}
+renderTable(tableData);
+            addForm.reset();
+            addModal.classList.add('hidden');
+  }
+  else{
+   tableData.push(newRecord);
             renderTable(tableData);
             addForm.reset();
             addModal.classList.add('hidden');
-        });
+ 
+  }
+})
+.catch(error => {
+  console.error("Error:", error);
+});
+            
+                    });
 
        
         editForm.addEventListener('submit', (e) => {
