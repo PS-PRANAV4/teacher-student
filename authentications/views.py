@@ -115,7 +115,7 @@ def add_student_mark(request):
             )
     try:
         with transaction.atomic():
-            student, created = Student.objects.get_or_create(name__iexact=data.get("name"))
+            student, created = Student.objects.get_or_create(name=data.get("name"))
     except Exception:
         JsonResponse(
             {
@@ -125,13 +125,13 @@ def add_student_mark(request):
             status=400
         )
     
-    student_q = Marks.objects.filter(subject__iexact=data.get("subject"),student=student)
+    student_q = Marks.objects.filter(subject=data.get("subject"),student=student)
     
     if student_q.exists():
         student_q.update(marks_obtained=F('marks_obtained') + data.get("mark"))
         
         return JsonResponse({"status":"success","operation":"update"})
     
-    mark_obj = Marks.objects.create(subject_iexact=data.get("subject"),marks_obtained=data.get("mark"),student=stuendt_objec,classroom=stuendt_objec.current_classroom,date=timezone.now())
+    mark_obj = Marks.objects.create(subject=data.get("subject"),marks_obtained=data.get("mark"),student=student,classroom=student.current_classroom,date=timezone.now())
     
     return JsonResponse({"status":"success","operation":"create","id":mark_obj.id})
