@@ -135,6 +135,6 @@ def add_student_mark(request):
         stuendt_objec = Student.objects.get(name=data.get("name"))
     except Exception:
         return JsonResponse({"status":"failed"})
-    Marks.objects.create(subject=data.get("subject"),marks_obtained=data.get("mark"),student=stuendt_objec,classroom=stuendt_objec.current_classroom,date=timezone.now())
+    mark_obj = Marks.objects.create(subject=data.get("subject"),marks_obtained=data.get("mark"),student=stuendt_objec,classroom=stuendt_objec.current_classroom,date=timezone.now())
     
-    return JsonResponse({"status":"success","operation":"create"})
+    return JsonResponse({"status":"success","operation":"create","id":mark_obj.id})
