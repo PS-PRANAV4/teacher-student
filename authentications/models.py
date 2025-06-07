@@ -21,13 +21,16 @@ class ClassRoom(models.Model):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
-    name = models.CharField(max_length=100,null=True,blank=True
+    name = models.CharField(
+        max_length=100,
+        null=True,blank=True,
+        unique=True
                             )
     current_classroom = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
+    
 
 
 class Teacher(models.Model):
@@ -41,7 +44,7 @@ class Teacher(models.Model):
 
 class Marks(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE)  
+    classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE,null=True,blank=True)  
     subject = models.CharField(max_length=100)
     marks_obtained = models.FloatField()
     date = models.DateField()

@@ -252,7 +252,7 @@ tableData = transformedData
             const newRecord = {
                 name: document.getElementById('name').value,
                 subject: document.getElementById('subject').value,
-                mark: document.getElementById('mark').value
+                mark: parseInt(document.getElementById('mark').value)
             };
 
       fetch('/add-student', {
@@ -265,13 +265,19 @@ tableData = transformedData
   },
   body: JSON.stringify(newRecord),
   credentials: 'include'  
-}).then(response => {
-  
-  return response.json();
+}).then(async response => {
+ data = await response.json()
+
+if (!response.ok) {
+    console.log(data);
+    alert(data.error)
+    throw new Error(data.msg );
+  }
+  return data;
 })
 .then(data => {
   if(data.operation=="update"){
-console.log("adding data");
+
 const index = tableData.findIndex(
   obj => obj.name === newRecord.name && obj.subject === newRecord.subject
   
@@ -295,6 +301,8 @@ renderTable(tableData);
 })
 .catch(error => {
   console.error("Error:", error);
+ 
+  
 });
             
                     });
@@ -315,7 +323,21 @@ fetch('/update-student', {
   
   },
   body: JSON.stringify({ id:editID.value,  name: editName.value,mark:editMark.value,subject:editSubject.value }),
-  credentials: 'include'  // very important: ensures session cookie is sent
+  credentials: 'include'
+}.then(async response => {
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.error)
+    throw new Error(data.msg);
+  }
+
+  
+ 
+}))
+.catch(error => {
+  console.error("Error updating student:", error.message);
+
 })
 
             tableData[index] = {
