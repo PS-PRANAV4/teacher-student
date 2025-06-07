@@ -29,7 +29,10 @@ class Student(models.Model):
     current_classroom = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return self.user.username
+        return self.name
+    def save(self, *args,**kwargs):
+        self.name = self.name.lower()
+        return super().save(*args,**kwargs)
     
 
 
@@ -50,4 +53,8 @@ class Marks(models.Model):
     date = models.DateField()
 
     def __str__(self):
-        return f"{self.student.user.username} - {self.subject} - "
+        return f"{self.student.name} - {self.subject} - "
+    
+    def save(self, *args,**kwargs):
+        self.subject = self.subject.lower()
+        return super().save(*args,**kwargs)

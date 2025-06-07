@@ -103,7 +103,9 @@ def update_student(request):
 def add_student_mark(request):
 
     data = json.loads(request.body)
+    print(data)
     data = validations(data=data,structer=add_student_mark_validator)
+    print(data)
     if data.get("error"):
             
         return JsonResponse(
@@ -115,9 +117,13 @@ def add_student_mark(request):
             )
     try:
         with transaction.atomic():
-            student, created = Student.objects.get_or_create(name=data.get("name"))
+            student = Student.objects.filter(name=data.get("name")).first()
+            if not student:
+                student = Student.objects.create(name=data.get("name"))
+
     except Exception:
-        JsonResponse(
+        
+        return JsonResponse(
             {
                 "msg":"student with name already exist"
 
@@ -125,7 +131,7 @@ def add_student_mark(request):
             status=400
         )
     
-    student_q = Marks.objects.filter(subject=data.get("subject"),student=student)
+    student_q = Marks.objects.filter(subject__iexact=data.get("subject"),student=student)
     
     if student_q.exists():
         student_q.update(marks_obtained=F('marks_obtained') + data.get("mark"))

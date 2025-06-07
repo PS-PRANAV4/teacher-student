@@ -274,8 +274,8 @@
         e.preventDefault();
 
         const newRecord = {
-            name: document.getElementById('name').value,
-            subject: document.getElementById('subject').value,
+            name: document.getElementById('name').value.toLowerCase(),
+            subject: document.getElementById('subject').value.toLowerCase(),
             mark: parseInt(document.getElementById('mark').value)
         };
 
@@ -303,13 +303,16 @@
                 if (data.operation == "update") {
 
                     const index = tableData.findIndex(
-                        obj => obj.name === newRecord.name && obj.subject === newRecord.subject
-
+                        obj =>
+                            obj.name.toLowerCase() === newRecord.name.toLowerCase() &&
+                            obj.subject.toLowerCase() === newRecord.subject.toLowerCase()
                     );
+                    console.log(index,"pranav");
+                    
                     tableData[index] = {
-                        id:tableData[index].id,
-                        name: newRecord.name,
-                        subject: newRecord.subject,
+                        id: tableData[index].id,
+                        name: newRecord.name.toLowerCase(),
+                        subject: newRecord.subject.toLowerCase(),
                         mark: parseInt(newRecord.mark) + parseInt(tableData[index].mark)
                     }
                     renderTable(tableData);
@@ -327,6 +330,8 @@
             })
             .catch(error => {
                 console.error("Error:", error);
+                console.log(error.error);
+                
 
 
             });
@@ -367,8 +372,8 @@
             })
 
         tableData[index] = {
-            name: editName.value,
-            subject: editSubject.value,
+            name: editName.value.toLowerCase(),
+            subject: editSubject.value.toLowerCase(),
             mark: editMark.value
         };
 
