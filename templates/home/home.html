@@ -224,7 +224,33 @@
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (confirm('Are you sure you want to delete this record?')) {
+                    const data = tableData[index]
                     tableData.splice(index, 1);
+                    fetch('/delete-mark', {
+
+
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify({ id: data.id}),
+            credentials: 'include'
+        }).then(async response => {
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error)
+                throw new Error(data.msg);
+            }
+
+
+
+        })
+            .catch(error => {
+                console.error("Error updating student:", error.message);
+
+            })
                     renderTable(tableData);
                 }
             });

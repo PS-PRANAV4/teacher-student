@@ -13,6 +13,8 @@ from django.db.models import  F
 from .utils import validations
 from .types import login_validator,update_mark_validator,add_student_mark_validator
 
+
+@never_cache
 def login_view(request):
     """
     Login View 
@@ -31,7 +33,8 @@ def login_view(request):
             return redirect("home")  
         else:
             messages.error(request, "Invalid username or password")
-            return redirect(login_view)        
+            return redirect(login_view)
+            
     return render(request=request,template_name="login/login.html")
 
 @never_cache
@@ -103,9 +106,7 @@ def update_student(request):
 def add_student_mark(request):
 
     data = json.loads(request.body)
-    print(data)
     data = validations(data=data,structer=add_student_mark_validator)
-    print(data)
     if data.get("error"):
             
         return JsonResponse(
@@ -141,3 +142,18 @@ def add_student_mark(request):
     mark_obj = Marks.objects.create(subject=data.get("subject"),marks_obtained=data.get("mark"),student=student,classroom=student.current_classroom,date=timezone.now())
     
     return JsonResponse({"status":"success","operation":"create","id":mark_obj.id})
+
+
+@csrf_exempt
+def delete_mark(request):
+    
+    data = json.loads(request.body)
+    id  = data.get("id")
+    try:
+        if id:
+            Marks.objects.get(id=id).delete()
+            return JsonResponse({"status":"success",})
+        return JsonResponse({"status":"failed","msg":"matching record not found"})
+    except Exception:
+        return JsonResponse({"status":"failed","message":"error in deleting id"})
+    
